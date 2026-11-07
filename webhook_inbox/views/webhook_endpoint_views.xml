@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_webhook_endpoint_list" model="ir.ui.view">
+        <field name="name">webhook.endpoint.list</field>
+        <field name="model">webhook.endpoint</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="url" widget="CopyClipboardChar"/>
+                <field name="signature_scheme" optional="show"/>
+                <field name="action_id" optional="show"/>
+                <field name="pending_count" string="To process"/>
+                <field name="failed_count" string="Failed"
+                       decoration-danger="failed_count &gt; 0"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_webhook_endpoint_form" model="ir.ui.view">
+        <field name="name">webhook.endpoint.form</field>
+        <field name="model">webhook.endpoint</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_generate_secret" type="object" string="Generate secret"
+                            invisible="signature_scheme == 'none'"
+                            confirm="Senders using the current secret will be rejected. Continue?"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_events" type="object" class="oe_stat_button" icon="fa-inbox">
+                            <field name="event_count" widget="statinfo" string="Events"/>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="e.g. Stripe payments"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code" placeholder="e.g. stripe"/>
+                            <field name="url" widget="CopyClipboardChar" invisible="not code"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="action_id"/>
+                            <field name="max_attempts"/>
+                            <field name="retention_days"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Security" name="security">
+                            <group>
+                                <group string="Signature">
+                                    <field name="signature_scheme"/>
+                                    <field name="secret" password="True" invisible="signature_scheme == 'none'"/>
+                                    <field name="signature_header" invisible="signature_scheme == 'none'"/>
+                                    <field name="signature_prefix" placeholder="e.g. sha256="
+                                           invisible="signature_scheme == 'none'"/>
+                                </group>
+                                <group string="Anti-replay and idempotency">
+                                    <field name="timestamp_header" placeholder="e.g. X-Timestamp"/>
+                                    <field name="timestamp_tolerance" invisible="not timestamp_header"/>
+                                    <field name="event_id_header" placeholder="e.g. X-Event-Id"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="How to use" name="help">
+                            <div class="o_webhook_help">
+                                <h3>1. Point the sender to the URL</h3>
+                                <p>Send <code>POST</code> requests to the <b>Webhook URL</b> above. Every valid request
+                                    is stored as an event and answered in milliseconds with
+                                    <code>{"status": "queued"}</code>.</p>
+                                <h3>2. Sign the requests</h3>
+                                <p>The sender computes <code>HMAC-SHA256(secret, raw body)</code> in hexadecimal and
+                                    sends it in the signature header. With the timestamp scheme, the signed message is
+                                    <code>&lt;timestamp&gt;.&lt;raw body&gt;</code> and requests older than the
+                                    tolerance are rejected.</p>
+                                <h3>3. Process the events</h3>
+                                <p>Create a <b>Processing Action</b> (Python code). The event is available as
+                                    <code>record</code>:</p>
+                                <pre class="bg-light p-3 border rounded">data = record.get_json()
+partner = env['res.partner'].search([('email', '=', data['email'])], limit=1)
+if not partner:
+    env['res.partner'].create({'name': data['name'], 'email': data['email']})</pre>
+                                <p>Events are processed in the background within seconds. Failures are retried up to
+                                    <b>Max Attempts</b> times and the error is stored on the event.</p>
+                            </div>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="description" placeholder="Internal notes about this integration..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_webhook_endpoint" model="ir.actions.act_window">
+        <field name="name">Endpoints</field>
+        <field name="res_model">webhook.endpoint</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'active_test': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Create your first webhook endpoint</p>
+            <p>Each endpoint gets its own URL, secret and processing action.</p>
+        </field>
+    </record>
+
+    <record id="action_webhook_server_actions" model="ir.actions.act_window">
+        <field name="name">Processing Actions</field>
+        <field name="res_model">ir.actions.server</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('model_id.model', '=', 'webhook.event')]</field>
+        <field name="context" eval="{'default_model_id': ref('webhook_inbox.model_webhook_event'), 'default_state': 'code'}"/>
+    </record>
+</odoo>

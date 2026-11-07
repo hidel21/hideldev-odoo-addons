@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_webhook_root" name="Webhooks" sequence="90"
+              web_icon="webhook_inbox,static/description/icon.png" groups="base.group_system"/>
+    <menuitem id="menu_webhook_events" name="Events" parent="menu_webhook_root"
+              action="action_webhook_event" sequence="10"/>
+    <menuitem id="menu_webhook_config" name="Configuration" parent="menu_webhook_root" sequence="90"/>
+    <menuitem id="menu_webhook_endpoints" name="Endpoints" parent="menu_webhook_config"
+              action="action_webhook_endpoint" sequence="10"/>
+    <menuitem id="menu_webhook_actions" name="Processing Actions" parent="menu_webhook_config"
+              action="action_webhook_server_actions" sequence="20"/>
+</odoo>

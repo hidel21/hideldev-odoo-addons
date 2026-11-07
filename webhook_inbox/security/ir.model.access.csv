@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_webhook_endpoint_system,webhook.endpoint system,model_webhook_endpoint,base.group_system,1,1,1,1
+access_webhook_event_system,webhook.event system,model_webhook_event,base.group_system,1,1,1,1

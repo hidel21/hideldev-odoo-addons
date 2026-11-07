@@ -1,0 +1,130 @@
+<section class="container" style="max-width:1100px;font-size:16px;line-height:1.6;color:#2d2d3a">
+
+    <!-- Hero -->
+    <div class="row align-items-center py-5">
+        <div class="col-lg-6">
+            <span style="display:inline-block;padding:4px 12px;border-radius:99px;background:#ede9fe;color:#5b21b6;font-size:13px;font-weight:600">Odoo 18 · Free · LGPL-3</span>
+            <h1 style="margin-top:16px;font-size:44px;font-weight:700;letter-spacing:-0.02em;color:#1b1530">Webhook Inbox</h1>
+            <p style="font-size:20px;color:#4b5563">Receive webhooks from any system — Stripe, HubSpot, Shopify, your own apps — <b>verify them, store them and process them</b> with a regular Odoo server action. No custom controller, no lost events.</p>
+        </div>
+        <div class="col-lg-6">
+            <img src="screenshot_events.png" class="img-fluid" style="border-radius:12px;box-shadow:0 20px 50px rgba(27,21,48,.18);border:1px solid #e5e7eb" alt="Webhook events list"/>
+        </div>
+    </div>
+
+    <!-- Features -->
+    <div class="row g-4 py-4">
+        <div class="col-md-4">
+            <div style="padding:22px;border:1px solid #e5e7eb;border-radius:12px;height:100%">
+                <h3 style="font-size:19px;font-weight:600;color:#1b1530">🔐 Secure by default</h3>
+                <p class="mb-0">HMAC-SHA256 signature check with constant-time comparison, optional <code>sha256=</code> prefix and a timestamp window that rejects replayed requests.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div style="padding:22px;border:1px solid #e5e7eb;border-radius:12px;height:100%">
+                <h3 style="font-size:19px;font-weight:600;color:#1b1530">♻️ Idempotent</h3>
+                <p class="mb-0">Every event is stored once, using the sender's event ID header or a SHA-256 of the body. Duplicate deliveries are acknowledged and ignored.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div style="padding:22px;border:1px solid #e5e7eb;border-radius:12px;height:100%">
+                <h3 style="font-size:19px;font-weight:600;color:#1b1530">⚡ Fast response</h3>
+                <p class="mb-0">The sender gets an answer in milliseconds. Processing runs in the background, so slow logic never causes timeouts or retries on the sender side.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div style="padding:22px;border:1px solid #e5e7eb;border-radius:12px;height:100%">
+                <h3 style="font-size:19px;font-weight:600;color:#1b1530">🧩 No-code processing</h3>
+                <p class="mb-0">Each endpoint runs a server action. In Python code, <code>record.get_json()</code> gives you the payload. Failures are isolated per event.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div style="padding:22px;border:1px solid #e5e7eb;border-radius:12px;height:100%">
+                <h3 style="font-size:19px;font-weight:600;color:#1b1530">🔁 Retries with backoff</h3>
+                <p class="mb-0">Failed events are retried after 1, 2, 4, 8… minutes up to a configurable limit, with the error kept on the event. Retry or close them from the list.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div style="padding:22px;border:1px solid #e5e7eb;border-radius:12px;height:100%">
+                <h3 style="font-size:19px;font-weight:600;color:#1b1530">🧹 Audit &amp; retention</h3>
+                <p class="mb-0">Payload, filtered headers, sender IP and timings for every event. Processed events are cleaned up automatically after N days.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- How it works -->
+    <div class="py-5">
+        <h2 style="font-size:30px;font-weight:700;color:#1b1530">How it works</h2>
+        <div class="row align-items-center g-5 mt-1">
+            <div class="col-lg-5">
+                <h3 style="font-size:20px;font-weight:600;color:#1b1530">1. Create an endpoint</h3>
+                <p>Give it a code and a secret — the module builds the URL <code>/webhook/&lt;code&gt;</code>. Choose the signature scheme and the headers your provider uses.</p>
+            </div>
+            <div class="col-lg-7">
+                <img src="screenshot_endpoint.png" class="img-fluid" style="border-radius:10px;border:1px solid #e5e7eb" alt="Endpoint configuration"/>
+            </div>
+        </div>
+        <div class="row align-items-center g-5 mt-3">
+            <div class="col-lg-5">
+                <h3 style="font-size:20px;font-weight:600;color:#1b1530">2. Process events with a server action</h3>
+                <p>Write a few lines of Python in a server action — create partners, confirm orders, register payments.</p>
+<pre style="background:#1b1530;color:#e9e5ff;padding:16px;border-radius:10px;font-size:13px">data = record.get_json()
+partner = env['res.partner'].search(
+    [('email', '=', data['email'])], limit=1)
+if not partner:
+    env['res.partner'].create({
+        'name': data['name'],
+        'email': data['email'],
+    })</pre>
+            </div>
+            <div class="col-lg-7">
+                <img src="screenshot_howto.png" class="img-fluid" style="border-radius:10px;border:1px solid #e5e7eb" alt="Built-in usage guide"/>
+            </div>
+        </div>
+        <div class="row align-items-center g-5 mt-3">
+            <div class="col-lg-5">
+                <h3 style="font-size:20px;font-weight:600;color:#1b1530">3. Monitor and recover</h3>
+                <p>See what failed and why, with the formatted payload. Errors are retried automatically; you can retry or mark events as done at any time.</p>
+            </div>
+            <div class="col-lg-7">
+                <img src="screenshot_error.png" class="img-fluid" style="border-radius:10px;border:1px solid #e5e7eb" alt="Event with error and scheduled retry"/>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sender example -->
+    <div class="py-4">
+        <h2 style="font-size:26px;font-weight:700;color:#1b1530">Signing requests (sender side)</h2>
+        <p>Any language works: compute an HMAC-SHA256 of the raw body with the shared secret and send it in the signature header.</p>
+<pre style="background:#f5f3ff;padding:16px;border-radius:10px;font-size:13px;border:1px solid #e9e5ff">import hashlib, hmac, json, requests
+
+body = json.dumps({"name": "Ada Lovelace", "email": "ada@example.com"}).encode()
+signature = hmac.new(b"YOUR_SECRET", body, hashlib.sha256).hexdigest()
+requests.post("https://your-odoo.com/webhook/my-endpoint", data=body, headers={
+    "Content-Type": "application/json",
+    "X-Signature": signature,
+    "X-Event-Id": "evt_0001",
+})</pre>
+        <p>Responses: <code>200 queued</code>, <code>200 duplicate</code>, <code>401</code> invalid signature or expired timestamp, <code>404</code> unknown or archived endpoint, <code>413</code> body over 2 MB.</p>
+    </div>
+
+    <!-- Quality -->
+    <div class="py-4">
+        <h2 style="font-size:26px;font-weight:700;color:#1b1530">Built for production</h2>
+        <ul>
+            <li>Concurrency-safe: events are locked with <code>FOR UPDATE SKIP LOCKED</code>, so the cron and manual processing never run the same event twice.</li>
+            <li>Covered by automated tests: signatures, replay window, duplicates, retries, backoff and cleanup.</li>
+            <li>Only depends on <code>base</code>. Access restricted to Settings administrators.</li>
+            <li>Sensitive headers (cookies, authorization) are never stored.</li>
+        </ul>
+    </div>
+
+    <!-- Author -->
+    <div class="py-5">
+        <div style="padding:28px;border-radius:14px;background:linear-gradient(135deg,#ede9fe,#ccfbf1)">
+            <h2 style="font-size:24px;font-weight:700;color:#1b1530">Need help with an integration?</h2>
+            <p class="mb-2">Built by <b>Hidelberg Martínez (Hideldev)</b>, senior Odoo developer (v14–v19) specialized in integrations, migrations and Latin American localization. Support in English and Spanish.</p>
+            <p class="mb-0">✉️ <a href="mailto:hidelmartinez21@gmail.com">hidelmartinez21@gmail.com</a> · 🌐 <a href="https://hidel21.github.io/en/" target="_blank">hidel21.github.io</a></p>
+        </div>
+    </div>
+</section>
