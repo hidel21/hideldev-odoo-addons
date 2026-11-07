@@ -2,7 +2,7 @@
     "name": "Webhook Inbox",
     "summary": "Receive webhooks safely: HMAC signatures, anti-replay, "
                "idempotency, queue, retries and server-action processing",
-    "version": "18.0.1.0.0",
+    "version": "18.0.1.0.1",
     "category": "Extra Tools",
     "author": "Hidelberg Martínez (Hideldev)",
     "website": "https://hidel21.github.io/",
